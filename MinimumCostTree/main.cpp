@@ -11,7 +11,7 @@ using namespace std;
 
 // pos : the coordinate of point
 // cost : the best cost between i & j
-int pos[200], cost[200][200];
+int pos[300], cost[300][300];
 
 // l: the total sum
 // n: num of addend
@@ -26,9 +26,9 @@ void dp(int l, int n) {
         cin >> pos[i];
         cost[i][i] = cost[i][i+1] = 0;
     }
-    sort(pos, pos+n);
     pos[++n] = l;
-    pos[0] = cost[0][0] = cost[0][1] = cost[n][n] = 0;
+    sort(pos, pos+n);
+    cost[0][0] = cost[0][1] = cost[n][n] = 0;
 
     // dp calculate answer
     for (int i = n - 2; i >= 0; --i)
