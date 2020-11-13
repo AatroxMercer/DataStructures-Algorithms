@@ -178,15 +178,15 @@ int main(int argc, char const *argv[])
     cin >> num;
     while (num--) {
         mmgc();
-        cout << "Total: " << ans << endl;
-        cout << best_a.size() << ":\t";
+        // cout << "Total: " << ans << endl;
+        // cout << best_a.size() << ":\t";
         for (int i = 0; i < best_a.size(); ++i)
             cout << best_a[i] << " ";
         cout << endl;
-        cout << best_b.size() << ":\t";
+        // cout << best_b.size() << ":\t";
         for (int i = 0; i < best_b.size(); ++i)
             cout << best_b[i] << " ";
-        cout << endl << endl;
+        cout << endl;
     }
 
     return 0;
