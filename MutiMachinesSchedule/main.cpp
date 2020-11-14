@@ -1,7 +1,3 @@
-/* Muti Machines Schedule
-5 3
-2 6 4 3 10
-*/
 #include <iostream>
 #include <algorithm>
 #define _MAX_N_ 100

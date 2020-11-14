@@ -1,7 +1,3 @@
-/* Minimum Cost Tree
-7 4
-1 3 4 5
-*/
 #include <cstring>
 #include <iostream>
 #include <algorithm>

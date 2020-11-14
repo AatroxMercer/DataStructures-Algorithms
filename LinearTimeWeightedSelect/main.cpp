@@ -1,17 +1,33 @@
-/* linear time weighted select
-10
-256 760 591 761 621 446 774 555 342 67 
-0.1124 0.0250 0.1149 0.1637 0.1073 0.0689 0.1819 0.1218 0.0646 0.0394 
-591
-*/
 #include <iostream>
-#define _MAX_N_ 1000
+#define _MAX_N_ 100000
 using namespace std;
 
-struct Elem {
+struct Element {
     int value;
     double weight;
 } x[_MAX_N_];
+
+/*
+    s: start index
+    e: end index
+    psv: partition standard value
+*/
+int partition(int s, int e, int psv) {
+    int l = s;
+    int r = e;
+    int psi;
+
+    while (l < r)
+        if (x[l].value < psv)
+            l++;
+        else if (x[l].value == psv)
+            psi = l++;
+        else
+            swap(x[l], x[r--]);
+
+    swap(x[psi], x[l]);
+    return l;
+}
 
 void sort(int s, int e) {
 	for (int i = s; i < e; i++)
@@ -20,89 +36,72 @@ void sort(int s, int e) {
 				swap(x[j], x[i]);
 }
 
-// s : start
-// e : end
-// sv: standard value
-int partition(int s, int e, int sv) {
-    int i = s, j = e + 1;
-	while (true) {
-		while (x[++i].value < sv && i < e);
-		while (x[--j].value > sv && j > s);
-		if (i < j)
-    		swap(x[i], x[j]);
-        else
-			break;
-	}
-
-	for (int k = s; k <= e; ++k)
-		if (x[k].value == sv)
-		{
-			swap(x[k], x[j]);
-			break;
-		}
-	return j;
-}
-
-// s : start
-// e : end
-int select(int s, int e, int ranking) {
-    if (e - s < 10) {
+// k : NO.k  start from 0
+// ps: patition stantdard
+Element select(int s, int e, int k) {
+    if (e - s < 100) {
         sort(s, e);
-        return x[s + ranking].value;
+        return x[s + k + 1];
     }
 
-    for (int i = 0; i <= (e-s-4) / 5; ++i) {
-        int gp = s + 5 * i;
-        sort(gp, gp + 4);
-        swap(x[s + i], x[gp + 2]);
+    for (int i = 0; i <= (e-s-4)/5; ++i) {
+        int l = s + 5 * i;
+        sort(l, l + 4);
+        swap(x[s+i], x[l+2]);
     }
 
-    int midval = select(s, s+(e-s-4)/5, (e-s-4)/10);
+    Element ps = select(s, s + (e-s)/5 - 1, (e-s) / 10);
+    int mid = partition(s, e, ps.value);
+    int no_dot = mid - s;
 
-    int mid = partition(s, e, midval);
-    int count = mid - s;
-
-    if (ranking <= count) return select(s, mid, ranking);
-    else return select(mid + 1, e, ranking - count - 1);
+    if (k > no_dot) return select(mid + 1, e, k- no_dot);
+    return select(s, mid, k);
 }
 
-// s : start
-// e : end
-// tw : target weight
-int weightedSelect(int s, int e, double tw) {
-    if (e - s < 10) {
+// tp: target percent
+Element weightedSelect(int s, int e, double tp) {
+    // short enough
+    if (e - s < 100) {
         sort(s, e);
 
-        double sum = 0;
-        for (int i = s; i < e; ++i) {
+        double sum = .0;
+        for (int i = s; i <= e; ++i) {
             sum += x[i].weight;
-            if (sum >= tw)
-                return x[i].value;
+            if (sum >= tp)
+                return x[i];
         }
     }
+    
+    // ranking of median
+    // offset from start
+    int ps_no = (e - s) / 2 - 1;
+    Element ps = select(s, e, ps_no);
 
-    int mid = (s + e) / 2;
-    select(s, e, mid);
-
-	double sum = 0;
-	for (int i = s; i <= mid; ++i)
-		sum += x[i].weight;
-
-	if (tw <= sum) return weightedSelect(s, mid, tw);
-	else return weightedSelect(mid + 1, e, tw - sum);
+    double weight_left = .0;
+    for (int i = 0; i <= ps_no; ++i)
+        weight_left += x[s+i].weight;
+    // cout << s << " " << ps_no << " " << e << endl;
+    // cout << weight_left << " " << tp << endl;
+    
+    if (weight_left < tp) return weightedSelect(ps_no + s + 1, e, tp - weight_left);
+    else return weightedSelect(s, s + ps_no, tp);
 }
 
 int main(int argc, char const *argv[])
 {
-    int n;
-    cin >> n;
+    freopen("exp1_in.txt", "r", stdin);
 
-    for (int i = 0; i < n; ++i)
-        cin >> x[i].value;
-    for (int i = 0; i < n; ++i)
-        cin >> x[i].weight;
+    int times = 25;
+    while (times--) {
+        int n;
+        cin >> n;
+        for (int i = 0; i < n; ++i)
+            cin >> x[i].value;
+        for (int i = 0; i < n; ++i)
+            cin >> x[i].weight;
 
-    cout << endl << weightedSelect(0, n-1, 0.5) << endl;
+        cout << weightedSelect(0, n-1, 0.5).value << endl;
+    }
 
     return 0;
 }

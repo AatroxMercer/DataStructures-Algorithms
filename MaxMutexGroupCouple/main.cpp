@@ -86,7 +86,7 @@ void judgeAnswer() {
         sum_best -= best_b[i];
 
     if (-abs(sum_curr) < sum_best) {
-        build_up(sum_curr < 0);
+        build_up(sum_curr > 0);
         return ;
     }
 
