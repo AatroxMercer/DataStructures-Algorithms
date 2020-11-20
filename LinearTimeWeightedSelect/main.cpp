@@ -54,7 +54,7 @@ Element select(int s, int e, int k) {
     int mid = partition(s, e, ps.value);
     int no_dot = mid - s;
 
-    if (k > no_dot) return select(mid + 1, e, k- no_dot);
+    if (k > no_dot) return select(mid + 1, e, k - no_dot);
     return select(s, mid, k);
 }
 
